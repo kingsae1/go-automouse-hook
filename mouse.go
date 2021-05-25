@@ -72,7 +72,7 @@ func add() {
 }
 
 func low() {
-	EvChan := hook.Start()
+	// EvChan := hook.Start()
 	defer hook.End()
 
 	ticker := createTicker(TIMEOUT)
@@ -81,7 +81,7 @@ func low() {
 	color := []string{"magenta", "cyan", "white", "yellow"}
 	colorIndex := 0
 
-	s := spinner.New(spinner.CharSets[35], 500*time.Millisecond) // Build our new spinner
+	s := spinner.New(spinner.CharSets[35], 700*time.Millisecond) // Build our new spinner
 	s.Prefix = " Detecting Event Hook : "
 	s.Color(color[colorIndex])
 
@@ -104,15 +104,16 @@ func low() {
 			}
 		}
 	}()
-	for ev := range EvChan {
-		if ev.Kind != 0 {
-			// for n > 0 {
-			s.Reverse() // Reverse the direction the spinner is spinning
-			s.Restart()
-			time.Sleep(10 * time.Second)
-			s.Stop()
-			ticker.resetTicker()
-		}
+	// for ev := range EvChan {
+	for n > 0 {
+		// if ev.Kind != 0 {
+		// for n > 0 {
+		s.Reverse() // Reverse the direction the spinner is spinning
+		s.Restart()
+		time.Sleep(10 * time.Second)
+		s.Stop()
+		ticker.resetTicker()
+		// }
 	}
 }
 
