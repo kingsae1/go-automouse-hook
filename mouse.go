@@ -10,7 +10,7 @@ import (
 	hook "github.com/robotn/gohook"
 )
 
-const TIMEOUT = 5 * 60 * time.Second
+const TIMEOUT = 5 * time.Second
 
 type ticker struct {
 	period time.Duration
@@ -56,10 +56,12 @@ func add() {
 	fmt.Println(" Timeout :", TIMEOUT)
 	fmt.Println(" Version : " + string(data))
 	fmt.Println(" #######################################")
-	fmt.Println(" Please press 'q' to start event hook !")
+	// fmt.Println(" Please press 'q' to start event hook !")
 	robotgo.EventHook(hook.KeyDown, []string{"q"}, func(e hook.Event) {
-		fmt.Println(" Detect Keyboard and Mouse event hook !")
-		robotgo.EventEnd()
+		// fmt.Println(" Detect Keyboard and Mouse event hook !")
+		// robotgo.EventEnd()
+		s := robotgo.EventStart()
+		<-robotgo.EventProcess(s)
 	})
 
 	// robotgo.EventHook(hook.MouseUp, []string{"mleft"}, func(e hook.Event) {
@@ -67,8 +69,6 @@ func add() {
 	// robotgo.EventEnd()
 	// })
 
-	s := robotgo.EventStart()
-	<-robotgo.EventProcess(s)
 }
 
 func low() {
