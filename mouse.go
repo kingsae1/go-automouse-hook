@@ -10,6 +10,8 @@ import (
 	hook "github.com/robotn/gohook"
 )
 
+const TIMEOUT = 5 * 60 * time.Second
+
 type ticker struct {
 	period time.Duration
 	ticker time.Ticker
@@ -51,6 +53,7 @@ func add() {
 	⠀⠀⠀⠀⠉⠉⠁⠀⠀⠀⠙⠿⠿⠿⠋⠀⠀⠀⠈⠉⠉`)
 	fmt.Println(" ########### Mouse Automover ###########")
 	fmt.Println(" Author : kingsae1004@gmail.com")
+	fmt.Println(" Timeout :", TIMEOUT)
 	fmt.Println(" Version : " + string(data))
 	fmt.Println(" #######################################")
 	fmt.Println(" Please press 'q' to start event hook !")
@@ -72,7 +75,7 @@ func low() {
 	EvChan := hook.Start()
 	defer hook.End()
 
-	ticker := createTicker(5 * 60 * time.Second)
+	ticker := createTicker(TIMEOUT)
 	ticker.resetTicker()
 
 	color := []string{"magenta", "cyan", "white", "yellow"}
