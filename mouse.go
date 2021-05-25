@@ -10,7 +10,7 @@ import (
 	hook "github.com/robotn/gohook"
 )
 
-const TIMEOUT = 5 * time.Second
+const TIMEOUT = 5 * 60 * time.Second
 
 type ticker struct {
 	period time.Duration
