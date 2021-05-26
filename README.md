@@ -1,4 +1,5 @@
 ![AutoMouse](https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/microsoft/209/mouse-face_1f42d.png)
+<img src="https://img.shields.io/badge/language-go-green?logo=go"/>
 
 # go.automouse.hook
 회사 프로그램 보안프로그램을 이용하다보면, 강제로 N분 이후에 이벤트가 없으면
