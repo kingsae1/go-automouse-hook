@@ -1,5 +1,5 @@
 ![AutoMouse](https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/microsoft/209/mouse-face_1f42d.png)
-<img src="https://img.shields.io/badge/language-go-green?logo=go"/>
+<img src="https://img.shields.io/badge/language-go-green?logo=go"/><img src="https://img.shields.io/badge/Version-0.5-green">
 
 # Auto Mouse
 보안프로그램을 이용하다보면, 강제로 N분 이후에 이벤트가 없으면 절전모드로 변환되는 경우가 발생하는데 이를 방지하기 위해 5분동안 키, 
@@ -13,8 +13,13 @@ To prevent this, press the key for 5 minutes, This is a program that forcibly ge
 go run mouse.go
 ```
 
-## Build Go script
+## Add Icon
 ```
 rsrc -manifest ./resource/mouse.exe.manifest -ico ./resource/mouse.ico 
+go build
+```
+
+## Build Go script
+```
 go build mouse.go
 ```
