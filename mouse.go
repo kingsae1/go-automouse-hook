@@ -3,6 +3,11 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"os/exec"
+	"regexp"
+	"runtime"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/briandowns/spinner"
@@ -10,9 +15,12 @@ import (
 	hook "github.com/robotn/gohook"
 )
 
-const TIMEOUT = 5 * 60 * time.Second
+const TICK_TIMEOUT = 5 * 60 * time.Second
+
+// const TIMEOUT = 1 * 10 * time.Second
 
 type ticker struct {
+	// Ticker : 미래에 한 시점에서 반복
 	period time.Duration
 	ticker time.Ticker
 }
@@ -25,9 +33,52 @@ func (t *ticker) resetTicker() {
 }
 
 func main() {
-	add()
-	low()
-	// event()
+	defer fmt.Println("FIN")
+
+	if runtime.GOOS == "windows" {
+		// 중복 실행 삭제
+		var fireArray [2]int
+		fireIndex := 0
+
+		lsCmd := exec.Command("c:/windows/system32/tasklist.exe")
+		grepCmd := exec.Command("c:/windows/system32/findstr.exe", "mouse.exe")
+		taskList, _ := lsCmd.Output()
+		grepIn, _ := grepCmd.StdinPipe()
+		grepOut, _ := grepCmd.StdoutPipe()
+
+		grepCmd.Start()
+
+		grepIn.Write(taskList)
+		grepIn.Close()
+
+		grepBytes, _ := ioutil.ReadAll(grepOut)
+
+		grepCmd.Wait()
+
+		stringResult := string(grepBytes)
+		r, _ := regexp.Compile("mouse")
+		stringArray := r.FindAllString(stringResult, -1)
+
+		if len(stringArray) > 1 {
+			slice := strings.Split(stringResult, " ")
+
+			for _, str := range slice {
+				pid, _ := strconv.Atoi(str)
+
+				if pid > 1 {
+					fireArray[fireIndex] = pid
+					fireIndex += 1
+				}
+			}
+
+			cmd := exec.Command("c:/windows/system32/taskkill.exe", "/PID", strconv.Itoa(fireArray[0]))
+			cmd.Start()
+			cmd.Wait()
+		}
+	}
+
+	defer low()
+	defer add()
 }
 
 func add() {
@@ -51,81 +102,68 @@ func add() {
 	⠀⠀⢸⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⣀⣾⣿⣿⣿⣿⣿⡇
 	⠀⠀⠀⢹⣿⣿⣿⡟⠛⢿⣷⣄⠀⣠⣶⡿⠛⢻⣿⣿⣿⡏⠁
 	⠀⠀⠀⠀⠉⠉⠁⠀⠀⠀⠙⠿⠿⠿⠋⠀⠀⠀⠈⠉⠉`)
-	fmt.Println(" ########### Mouse Automover ###########")
+	fmt.Println(" ############## Automover ##############")
 	fmt.Println(" Author : kingsae1004@gmail.com")
-	fmt.Println(" Timeout :", TIMEOUT)
+	fmt.Println(" Ticker Timeout :", TICK_TIMEOUT)
 	fmt.Println(" Version : " + string(data))
 	fmt.Println(" #######################################")
-	// fmt.Println(" Please press 'q' to start event hook !")
-	robotgo.EventHook(hook.KeyDown, []string{"q"}, func(e hook.Event) {
-		// fmt.Println(" Detect Keyboard and Mouse event hook !")
-		// robotgo.EventEnd()
-		s := robotgo.EventStart()
-		<-robotgo.EventProcess(s)
-	})
-
-	// robotgo.EventHook(hook.MouseUp, []string{"mleft"}, func(e hook.Event) {
-	// fmt.Println("mouse-left")
-	// robotgo.EventEnd()
-	// })
-
 }
 
-func low() {
-	// EvChan := hook.Start()
-	defer hook.End()
+var index = 0
 
-	ticker := createTicker(TIMEOUT)
-	ticker.resetTicker()
+func moveMouseCount() {
+	index += 1
 
-	color := []string{"magenta", "cyan", "white", "yellow"}
-	colorIndex := 0
+	// log.Println(index)
 
-	s := spinner.New(spinner.CharSets[35], 700*time.Millisecond) // Build our new spinner
-	s.Prefix = " Detecting Event Hook : "
-	s.Color(color[colorIndex])
-
-	n := 1
-	go func() {
-		for n > 0 {
-			select {
-			//case <-done:
-			//	return
-			case <-ticker.ticker.C:
-				// fmt.Println("Move Scroll mouse")
-				colorIndex += 1
-
-				if colorIndex >= len(color) {
-					colorIndex = 0
-				}
-				s.Color(color[colorIndex])
-
-				robotgo.ScrollMouse(10, "up")
-			}
-		}
-	}()
-	// for ev := range EvChan {
-	for n > 0 {
-		// if ev.Kind != 0 {
-		// for n > 0 {
-		s.Reverse() // Reverse the direction the spinner is spinning
-		s.Restart()
-		time.Sleep(10 * time.Second)
-		s.Stop()
-		ticker.resetTicker()
-		// }
+	if index > 10 {
+		index = 0
+		robotgo.ScrollMouse(1, "up")
+		robotgo.ScrollMouse(1, "down")
 	}
 }
 
-// func event() {
-// 	ok := robotgo.AddEvents("q")
-// 	if ok {
-// 		fmt.Println("add events...")
-// 	}
+func low() {
+	EvChan := hook.Start()
+	defer hook.End()
 
-// 	mleft := robotgo.AddEvent("mleft")
-// 	if mleft {
-// 		fmt.Println("you press... ", "mouse left button")
-// 	}
+	ticker := createTicker(10 * time.Second)
+	ticker.resetTicker()
 
-// }
+	s := spinner.New(spinner.CharSets[35], 700*time.Millisecond) // Build our new spinner
+	s.Restart()
+
+	// for tick := range ticker.ticker.C {
+	// 	fmt.Println("Tick at", tick)
+	// }
+
+	n := 1
+
+	for n > 0 {
+		// log.Println("Event Length : " + strconv.Itoa(len(EvChan)))
+		s.Reverse() // Reverse the direction the spinner is spinning
+		s.Restart()
+
+		s.Suffix = " (" + strconv.Itoa(len(EvChan)) + ")"
+
+		if len(EvChan) > 30 {
+			// 이벤트가 발생한 경우
+			s.Prefix = " [Detected] Event Hook : "
+			s.Color("magenta")
+
+			// 이벤트 초기화
+			hook.End()
+			EvChan = hook.Start()
+			index = 0
+		} else {
+			// 이벤트가 없는 경우 이벤트 강제 발생
+			s.Prefix = " [Detecting] Event Hook : "
+			s.Color("cyan")
+			moveMouseCount()
+		}
+
+		time.Sleep(5 * time.Second)
+		s.Stop()
+		ticker.resetTicker()
+	}
+}
