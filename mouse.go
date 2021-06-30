@@ -15,7 +15,8 @@ import (
 	hook "github.com/robotn/gohook"
 )
 
-const TICK_TIMEOUT = 5 * 60 * time.Second
+var TICK_TIMEOUT = 5 * 60 * time.Second
+var VERSION = "NONE"
 
 // const TIMEOUT = 1 * 10 * time.Second
 
@@ -41,7 +42,7 @@ func main() {
 		fireIndex := 0
 
 		lsCmd := exec.Command("c:/windows/system32/tasklist.exe")
-		grepCmd := exec.Command("c:/windows/system32/findstr.exe", "mouse.exe")
+		grepCmd := exec.Command("c:/windows/system32/findstr.exe", "go.automover.exe")
 		taskList, _ := lsCmd.Output()
 		grepIn, _ := grepCmd.StdinPipe()
 		grepOut, _ := grepCmd.StdoutPipe()
@@ -56,7 +57,7 @@ func main() {
 		grepCmd.Wait()
 
 		stringResult := string(grepBytes)
-		r, _ := regexp.Compile("mouse")
+		r, _ := regexp.Compile("automover")
 		stringArray := r.FindAllString(stringResult, -1)
 
 		if len(stringArray) > 1 {
@@ -82,11 +83,17 @@ func main() {
 }
 
 func add() {
-	data, error := ioutil.ReadFile("version.txt")
+	data, _ := ioutil.ReadFile("go.automover.config")
+	info := strings.Split(string(data), "|")
 
-	if error != nil {
-		fmt.Println(error)
-		data = []byte("Please check version.txt")
+	for index, value := range info {
+		if index == 0 {
+			VERSION = value
+		} else if index == 1 {
+			timeout, _ := strconv.Atoi(value)
+			TICK_TIMEOUT = time.Duration(timeout) * time.Second
+		}
+
 	}
 
 	fmt.Println(" #######################################")
@@ -105,7 +112,7 @@ func add() {
 	fmt.Println(" ############## Automover ##############")
 	fmt.Println(" Author : kingsae1004@gmail.com")
 	fmt.Println(" Ticker Timeout :", TICK_TIMEOUT)
-	fmt.Println(" Version : " + string(data))
+	fmt.Println(" Version : v" + string(VERSION))
 	fmt.Println(" #######################################")
 }
 
@@ -132,17 +139,15 @@ func low() {
 
 	s := spinner.New(spinner.CharSets[35], 700*time.Millisecond) // Build our new spinner
 	s.Restart()
-
-	// for tick := range ticker.ticker.C {
-	// 	fmt.Println("Tick at", tick)
-	// }
+	s.Prefix = " [Detecting] Event Hook : "
+	s.Color("cyan")
 
 	n := 1
 
 	for n > 0 {
 		// log.Println("Event Length : " + strconv.Itoa(len(EvChan)))
 		s.Reverse() // Reverse the direction the spinner is spinning
-		s.Restart()
+		// s.Restart()
 
 		s.Suffix = " (" + strconv.Itoa(len(EvChan)) + ")"
 
@@ -162,8 +167,9 @@ func low() {
 			moveMouseCount()
 		}
 
-		time.Sleep(5 * time.Second)
-		s.Stop()
+		time.Sleep(TICK_TIMEOUT)
+		// s.Stop()
+
 		ticker.resetTicker()
 	}
 }
