@@ -19,6 +19,7 @@ var TICK_TIMEOUT = 5 * 60 * time.Second
 var TICK_COUNT = 10
 var VERSION = "NONE"
 var SPINNER = spinner.New(spinner.CharSets[35], 700*time.Millisecond) // Build our new spinner
+var INDEX = 0
 
 // const TIMEOUT = 1 * 10 * time.Second
 
@@ -37,6 +38,9 @@ func (t *ticker) resetTicker() {
 
 func main() {
 	defer fmt.Println("FIN")
+
+	SPINNER.Prefix = " [Detecting] Event Hook : "
+	SPINNER.Color("cyan")
 
 	if runtime.GOOS == "windows" {
 		// 중복 실행 삭제
@@ -121,13 +125,11 @@ func add() {
 	fmt.Println(" #######################################")
 }
 
-var index = 0
-
 func moveMouseCount() {
-	index += 1
+	INDEX += 1
 
 	// 실제 호출되는 시점 : Timeout * index
-	if index > TICK_COUNT {
+	if INDEX > TICK_COUNT {
 		robotgo.ScrollMouse(1, "up")
 		robotgo.ScrollMouse(1, "down")
 
@@ -135,11 +137,12 @@ func moveMouseCount() {
 		SPINNER.Prefix = " [Moving] Event Hook : "
 		SPINNER.Color("yellow")
 		time.Sleep(5 * time.Second)
-		index = 0
+		INDEX = 0
 	}
 }
 
 func low() {
+	INDEX = 0
 	EvChan := hook.Start()
 	defer hook.End()
 
@@ -154,17 +157,18 @@ func low() {
 
 	for n > 0 {
 		SPINNER.Reverse() // Reverse the direction the spinner is spinning
-		SPINNER.Suffix = " (" + strconv.Itoa(len(EvChan)) + ")"
+		SPINNER.Suffix = " (" + strconv.Itoa(INDEX) + ")"
 
 		if len(EvChan) > 30 {
 			// 이벤트가 발생한 경우
+			INDEX = 0
+
 			SPINNER.Prefix = " [Detected] Event Hook : "
 			SPINNER.Color("magenta")
 
 			// 이벤트 초기화
 			hook.End()
 			EvChan = hook.Start()
-			index = 0
 			time.Sleep(5 * time.Second)
 		} else {
 			// 이벤트가 없는 경우 이벤트 강제 발생
