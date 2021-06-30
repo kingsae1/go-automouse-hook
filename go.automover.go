@@ -174,8 +174,8 @@ func low() {
 			// 이벤트가 없는 경우 이벤트 강제 발생
 			SPINNER.Prefix = " [Detecting] Event Hook : "
 			SPINNER.Color("cyan")
-			moveMouseCount()
 			time.Sleep(TICK_TIMEOUT)
+			moveMouseCount()
 		}
 
 		ticker.resetTicker()
