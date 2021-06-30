@@ -91,7 +91,7 @@ func add() {
 			VERSION = value
 		} else if index == 1 {
 			timeout, _ := strconv.Atoi(value)
-			TICK_TIMEOUT = time.Duration(timeout) * time.Second
+			TICK_TIMEOUT = time.Duration(timeout) * 60 * time.Second
 		}
 
 	}
@@ -160,15 +160,14 @@ func low() {
 			hook.End()
 			EvChan = hook.Start()
 			index = 0
+			time.Sleep(5 * time.Second)
 		} else {
 			// 이벤트가 없는 경우 이벤트 강제 발생
 			s.Prefix = " [Detecting] Event Hook : "
 			s.Color("cyan")
 			moveMouseCount()
+			time.Sleep(TICK_TIMEOUT)
 		}
-
-		time.Sleep(TICK_TIMEOUT)
-		// s.Stop()
 
 		ticker.resetTicker()
 	}
