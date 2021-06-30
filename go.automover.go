@@ -127,15 +127,15 @@ func moveMouseCount() {
 	index += 1
 
 	// 실제 호출되는 시점 : Timeout * index
-
 	if index > TICK_COUNT {
-		time.Sleep(5 * time.Second)
-		index = 0
 		robotgo.ScrollMouse(1, "up")
 		robotgo.ScrollMouse(1, "down")
+
+		time.Sleep(5 * time.Second)
 		SPINNER.Prefix = " [Moving] Event Hook : "
 		SPINNER.Color("yellow")
 		time.Sleep(5 * time.Second)
+		index = 0
 	}
 }
 
