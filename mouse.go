@@ -16,7 +16,9 @@ import (
 )
 
 var TICK_TIMEOUT = 5 * 60 * time.Second
+var TICK_COUNT = 10
 var VERSION = "NONE"
+var SPINNER = spinner.New(spinner.CharSets[35], 700*time.Millisecond) // Build our new spinner
 
 // const TIMEOUT = 1 * 10 * time.Second
 
@@ -92,8 +94,10 @@ func add() {
 		} else if index == 1 {
 			timeout, _ := strconv.Atoi(value)
 			TICK_TIMEOUT = time.Duration(timeout) * 60 * time.Second
+		} else if index == 2 {
+			tickcount, _ := strconv.Atoi(value)
+			TICK_COUNT = tickcount
 		}
-
 	}
 
 	fmt.Println(" #######################################")
@@ -112,6 +116,7 @@ func add() {
 	fmt.Println(" ############## Automover ##############")
 	fmt.Println(" Author : kingsae1004@gmail.com")
 	fmt.Println(" Ticker Timeout :", TICK_TIMEOUT)
+	fmt.Println(" Ticker MaxCount :", TICK_COUNT)
 	fmt.Println(" Version : v" + string(VERSION))
 	fmt.Println(" #######################################")
 }
@@ -121,12 +126,16 @@ var index = 0
 func moveMouseCount() {
 	index += 1
 
-	// log.Println(index)
+	// 실제 호출되는 시점 : Timeout * index
 
-	if index > 10 {
+	if index > TICK_COUNT {
+		time.Sleep(5 * time.Second)
 		index = 0
 		robotgo.ScrollMouse(1, "up")
 		robotgo.ScrollMouse(1, "down")
+		SPINNER.Prefix = " [Moving] Event Hook : "
+		SPINNER.Color("yellow")
+		time.Sleep(5 * time.Second)
 	}
 }
 
@@ -137,24 +146,20 @@ func low() {
 	ticker := createTicker(10 * time.Second)
 	ticker.resetTicker()
 
-	s := spinner.New(spinner.CharSets[35], 700*time.Millisecond) // Build our new spinner
-	s.Restart()
-	s.Prefix = " [Detecting] Event Hook : "
-	s.Color("cyan")
+	SPINNER.Restart()
+	SPINNER.Prefix = " [Detecting] Event Hook : "
+	SPINNER.Color("cyan")
 
 	n := 1
 
 	for n > 0 {
-		// log.Println("Event Length : " + strconv.Itoa(len(EvChan)))
-		s.Reverse() // Reverse the direction the spinner is spinning
-		// s.Restart()
-
-		s.Suffix = " (" + strconv.Itoa(len(EvChan)) + ")"
+		SPINNER.Reverse() // Reverse the direction the spinner is spinning
+		SPINNER.Suffix = " (" + strconv.Itoa(len(EvChan)) + ")"
 
 		if len(EvChan) > 30 {
 			// 이벤트가 발생한 경우
-			s.Prefix = " [Detected] Event Hook : "
-			s.Color("magenta")
+			SPINNER.Prefix = " [Detected] Event Hook : "
+			SPINNER.Color("magenta")
 
 			// 이벤트 초기화
 			hook.End()
@@ -163,8 +168,8 @@ func low() {
 			time.Sleep(5 * time.Second)
 		} else {
 			// 이벤트가 없는 경우 이벤트 강제 발생
-			s.Prefix = " [Detecting] Event Hook : "
-			s.Color("cyan")
+			SPINNER.Prefix = " [Detecting] Event Hook : "
+			SPINNER.Color("cyan")
 			moveMouseCount()
 			time.Sleep(TICK_TIMEOUT)
 		}
