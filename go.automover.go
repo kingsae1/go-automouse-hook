@@ -22,8 +22,6 @@ var VERSION = "NONE"
 var SPINNER = spinner.New(spinner.CharSets[35], 700*time.Millisecond) // Build our new spinner
 var INDEX = 0
 
-// const TIMEOUT = 1 * 10 * time.Second
-
 type ticker struct {
 	// Ticker : 미래에 한 시점에서 반복
 	period time.Duration
@@ -43,8 +41,14 @@ func main() {
 	SPINNER.Prefix = " [Detecting] Event Hook : "
 	SPINNER.Color("cyan")
 
+	checkExe()
+	initialize()
+	eventhook()
+}
+
+func checkExe() {
+	// (윈도우) 중복 실행 삭제
 	if runtime.GOOS == "windows" {
-		// 중복 실행 삭제
 		var fireArray [2]int
 		fireIndex := 0
 
@@ -84,25 +88,27 @@ func main() {
 			cmd.Wait()
 		}
 	}
-
-	defer low()
-	defer add()
 }
 
-func add() {
+func initialize() {
 	data, _ := ioutil.ReadFile("go.automover.config")
 	info := strings.Split(string(data), "|")
 
+	// Config 값 로드 후, 재정의
 	for index, value := range info {
 		if index == 0 {
+			// 버전
 			VERSION = value
 		} else if index == 1 {
+			// 티커 타임아웃
 			timeout, _ := strconv.Atoi(value)
 			TICK_TIMEOUT = time.Duration(timeout) * 60 * time.Second
 		} else if index == 2 {
+			// 티커 횟수
 			tickcount, _ := strconv.Atoi(value)
 			TICK_COUNT = tickcount
 		} else if index == 3 {
+			// 후커 타임아웃
 			hooktimeout, _ := strconv.Atoi(value)
 			HOOK_TIMEOUT = time.Duration(hooktimeout) * time.Second
 		}
@@ -147,7 +153,7 @@ func moveMouseCount() {
 	}
 }
 
-func low() {
+func eventhook() {
 	INDEX = 0
 	EvChan := hook.Start()
 	defer hook.End()
@@ -173,6 +179,7 @@ func low() {
 			SPINNER.Color("magenta")
 
 			// 이벤트 초기화
+			hook.End()
 			EvChan = nil
 			time.Sleep(HOOK_TIMEOUT)
 			EvChan = hook.Start()
