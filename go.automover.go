@@ -108,7 +108,7 @@ func add() {
 		}
 	}
 
-	fmt.Println(" #######################################")
+	fmt.Println("")
 	fmt.Println(`	 ⣠⣤⡾⠿⠿⠿⢷⣤⣀⠀⠀⠀⠀⠀⣀⣤⡾⠿⠿⠿⢷⣤⣄
 	⣤⡿⠋⠀⠀⠀⠀⠀⠙⣿⣄⠀⠀⠀⣠⣿⠋⠁⠀⠀⠀⠀⠙⢿⣤
 	⣿⡇⠀⠀⠀⠀⠀⠀⠀⠻⣿⣿⣿⣿⣿⠿⠀⠀⠀⠀⠀⠀⠀⢸⣿
@@ -120,7 +120,8 @@ func add() {
 	⠀⠀⠀⢠⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣄
 	⠀⠀⢸⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⣀⣾⣿⣿⣿⣿⣿⡇
 	⠀⠀⠀⢹⣿⣿⣿⡟⠛⢿⣷⣄⠀⣠⣶⡿⠛⢻⣿⣿⣿⡏⠁
-	⠀⠀⠀⠀⠉⠉⠁⠀⠀⠀⠙⠿⠿⠿⠋⠀⠀⠀⠈⠉⠉`)
+	⠀⠀⠀⠀⠉⠉⠁⠀⠀⠀⠙⠿⠿⠿⠋⠀⠀⠀⠈⠉⠉
+	`)
 	fmt.Println(" ############## Automover ##############")
 	fmt.Println(" Author : kingsae1004@gmail.com")
 	fmt.Println(" Ticker Timeout :", TICK_TIMEOUT)
@@ -172,7 +173,7 @@ func low() {
 			SPINNER.Color("magenta")
 
 			// 이벤트 초기화
-			hook.End()
+			EvChan = nil
 			time.Sleep(HOOK_TIMEOUT)
 			EvChan = hook.Start()
 		} else {
