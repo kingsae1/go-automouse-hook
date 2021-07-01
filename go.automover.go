@@ -169,7 +169,6 @@ func eventhook() {
 
 	for n > 0 {
 		SPINNER.Reverse() // Reverse the direction the spinner is spinning
-		SPINNER.Suffix = " (" + strconv.Itoa(INDEX) + "/" + strconv.Itoa(len(EvChan)) + ")"
 
 		if len(EvChan) > 30 {
 			// 이벤트가 발생한 경우
@@ -191,6 +190,7 @@ func eventhook() {
 			moveMouseCount()
 		}
 
+		SPINNER.Suffix = " (" + strconv.Itoa(INDEX) + "/" + strconv.Itoa(len(EvChan)) + ")"
 		ticker.resetTicker()
 	}
 }
