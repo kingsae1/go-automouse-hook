@@ -190,7 +190,7 @@ func eventhook() {
 			moveMouseCount()
 		}
 
-		SPINNER.Suffix = " (" + strconv.Itoa(INDEX) + "/" + strconv.Itoa(len(EvChan)) + ")"
+		SPINNER.Suffix = " ( Idx : " + strconv.Itoa(INDEX) + "/ Evt : " + strconv.Itoa(len(EvChan)) + ")"
 		ticker.resetTicker()
 	}
 }
