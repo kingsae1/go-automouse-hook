@@ -15,6 +15,7 @@ import (
 	hook "github.com/robotn/gohook"
 )
 
+var HOOK_TIMEOUT = 10 * time.Second
 var TICK_TIMEOUT = 5 * 60 * time.Second
 var TICK_COUNT = 10
 var VERSION = "NONE"
@@ -101,6 +102,9 @@ func add() {
 		} else if index == 2 {
 			tickcount, _ := strconv.Atoi(value)
 			TICK_COUNT = tickcount
+		} else if index == 3 {
+			hooktimeout, _ := strconv.Atoi(value)
+			HOOK_TIMEOUT = time.Duration(hooktimeout) * time.Second
 		}
 	}
 
@@ -120,6 +124,7 @@ func add() {
 	fmt.Println(" ############## Automover ##############")
 	fmt.Println(" Author : kingsae1004@gmail.com")
 	fmt.Println(" Ticker Timeout :", TICK_TIMEOUT)
+	fmt.Println(" Hooker Timeout :", HOOK_TIMEOUT)
 	fmt.Println(" Ticker MaxCount :", TICK_COUNT)
 	fmt.Println(" Version : v" + string(VERSION))
 	fmt.Println(" #######################################")
@@ -168,8 +173,8 @@ func low() {
 
 			// 이벤트 초기화
 			hook.End()
+			time.Sleep(HOOK_TIMEOUT)
 			EvChan = hook.Start()
-			time.Sleep(5 * time.Second)
 		} else {
 			// 이벤트가 없는 경우 이벤트 강제 발생
 			SPINNER.Prefix = " [Detecting] Event Hook : "
